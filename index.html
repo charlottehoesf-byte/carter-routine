@@ -1,0 +1,1672 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="default" />
+  <meta name="apple-mobile-web-app-title" content="Carter's Routine" />
+  <title>Carter's Today's Schedule</title>
+  <link rel="apple-touch-icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 180 180'%3E%3Crect width='180' height='180' rx='40' fill='%230284c7'/%3E%3Ccircle cx='90' cy='90' r='54' fill='none' stroke='%23ffffff' stroke-width='12'/%3E%3Cpath d='M66 92l16 16 34-36' fill='none' stroke='%23ffffff' stroke-width='13' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E" />
+  <style>
+    :root {
+      --bg: #f8fafc;
+      --surface: #ffffff;
+      --surface-subtle: #f1f5f9;
+      --border: #e2e8f0;
+      --border-strong: #cbd5e1;
+      --text: #0f172a;
+      --text-muted: #64748b;
+      --text-soft: #94a3b8;
+      --sky-50: #f0f9ff;
+      --sky-100: #e0f2fe;
+      --sky-300: #7dd3fc;
+      --sky-600: #0284c7;
+      --sky-700: #0369a1;
+      --emerald-50: #ecfdf5;
+      --emerald-100: #d1fae5;
+      --emerald-200: #a7f3d0;
+      --emerald-500: #10b981;
+      --emerald-700: #047857;
+      --rose-50: #fff1f2;
+      --rose-600: #e11d48;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      -webkit-tap-highlight-color: transparent;
+      -webkit-font-smoothing: antialiased;
+      padding-top: env(safe-area-inset-top);
+      padding-bottom: env(safe-area-inset-bottom);
+    }
+
+    button, input, select {
+      font-family: inherit;
+    }
+
+    .container {
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 1.25rem 1rem 2rem;
+    }
+
+    @media (min-width: 640px) {
+      .container {
+        padding: 2rem 1.5rem 2.5rem;
+      }
+    }
+
+    /* Header */
+    .header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1.5rem;
+    }
+
+    .title-row {
+      display: flex;
+      align-items: center;
+      gap: 0.625rem;
+    }
+
+    .title {
+      margin: 0;
+      font-size: 1.625rem;
+      font-weight: 800;
+      letter-spacing: -0.025em;
+      color: var(--text);
+    }
+
+    @media (min-width: 640px) {
+      .title {
+        font-size: 1.875rem;
+      }
+    }
+
+    .today-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 9999px;
+      background: var(--sky-100);
+      padding: 0.2rem 0.65rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--sky-700);
+    }
+
+    .date-subtitle {
+      margin: 0.2rem 0 0;
+      font-size: 0.9375rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .day-nav {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 0.875rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0.25rem;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+    }
+
+    .icon-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: none;
+      border-radius: 0.625rem;
+      background: transparent;
+      color: #475569;
+      cursor: pointer;
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .icon-btn:hover {
+      background: var(--surface-subtle);
+    }
+
+    .icon-btn:active {
+      transform: scale(0.94);
+    }
+
+    .today-btn {
+      height: 2.5rem;
+      padding: 0 0.75rem;
+      border: none;
+      border-radius: 0.625rem;
+      background: transparent;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .today-btn:hover {
+      background: var(--surface-subtle);
+    }
+
+    .today-btn:active {
+      transform: scale(0.95);
+    }
+
+    .sound-btn {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+      height: 3rem;
+      padding: 0 0.875rem;
+      border: 1px solid var(--border);
+      border-radius: 0.875rem;
+      background: var(--surface);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .sound-btn:hover {
+      background: var(--surface-subtle);
+    }
+
+    .sound-btn:active {
+      transform: scale(0.95);
+    }
+
+    .sound-label {
+      display: none;
+    }
+
+    @media (min-width: 640px) {
+      .sound-label {
+        display: inline;
+      }
+    }
+
+    /* Cards */
+    .card {
+      border-radius: 1.5rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 1.25rem;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, 0.04);
+      margin-bottom: 1.5rem;
+    }
+
+    @media (min-width: 640px) {
+      .card {
+        padding: 1.75rem;
+      }
+    }
+
+    .schedule-top {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.75rem;
+      margin-bottom: 1.25rem;
+    }
+
+    .schedule-heading {
+      margin: 0;
+      font-size: 1.375rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+    }
+
+    .progress-text {
+      margin: 0.2rem 0 0;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text-muted);
+    }
+
+    .all-done-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      border-radius: 9999px;
+      background: var(--emerald-100);
+      padding: 0.4rem 0.875rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--emerald-700);
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 0.75rem;
+      border-radius: 9999px;
+      background: var(--surface-subtle);
+      overflow: hidden;
+      margin-bottom: 1.5rem;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      border-radius: 9999px;
+      background: var(--emerald-500);
+      transition: width 0.3s ease-out;
+    }
+
+    /* Task List */
+    .schedule-list {
+      list-style: none;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    .task-item {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0.875rem;
+      transition: border-color 0.15s, background-color 0.15s;
+    }
+
+    @media (min-width: 640px) {
+      .task-item {
+        padding: 1rem;
+      }
+    }
+
+    .task-item:hover {
+      border-color: var(--border-strong);
+    }
+
+    .task-item.completed {
+      border-color: var(--emerald-200);
+      background: rgba(236, 253, 245, 0.7);
+    }
+
+    .check-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.75rem;
+      height: 2.75rem;
+      flex-shrink: 0;
+      border-radius: 0.75rem;
+      border: 2px solid var(--border-strong);
+      background: var(--surface);
+      color: transparent;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .check-btn:hover {
+      border-color: var(--sky-600);
+    }
+
+    .check-btn:active {
+      transform: scale(0.9);
+    }
+
+    .check-btn.completed {
+      border-color: var(--emerald-500);
+      background: var(--emerald-500);
+      color: #ffffff;
+      animation: popCheck 0.25s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    @keyframes popCheck {
+      0% { transform: scale(0.85); }
+      50% { transform: scale(1.15); }
+      100% { transform: scale(1); }
+    }
+
+    .task-content-btn {
+      display: flex;
+      flex: 1;
+      min-width: 0;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 0.25rem;
+      border: none;
+      background: transparent;
+      padding: 0;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    @media (min-width: 640px) {
+      .task-content-btn {
+        flex-direction: row;
+        align-items: center;
+        gap: 0.75rem;
+      }
+    }
+
+    .time-badge {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      border-radius: 0.5rem;
+      background: var(--sky-50);
+      padding: 0.25rem 0.625rem;
+      font-size: 0.8125rem;
+      font-weight: 700;
+      color: var(--sky-700);
+    }
+
+    .task-item.completed .time-badge {
+      background: var(--emerald-100);
+      color: var(--emerald-700);
+    }
+
+    .task-title {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+      word-break: break-word;
+    }
+
+    @media (min-width: 640px) {
+      .task-title {
+        font-size: 1.0625rem;
+      }
+    }
+
+    .task-item.completed .task-title {
+      color: var(--text-soft);
+      text-decoration: line-through;
+      text-decoration-thickness: 2px;
+    }
+
+    .task-actions {
+      display: flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .action-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 2.5rem;
+      height: 2.5rem;
+      border: none;
+      border-radius: 0.75rem;
+      background: transparent;
+      color: var(--text-soft);
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s, transform 0.1s;
+    }
+
+    .action-btn:hover {
+      background: var(--surface-subtle);
+      color: #334155;
+    }
+
+    .action-btn.delete:hover {
+      background: var(--rose-50);
+      color: var(--rose-600);
+    }
+
+    .action-btn:active {
+      transform: scale(0.9);
+    }
+
+    /* Empty State */
+    .empty-state {
+      border-radius: 1rem;
+      border: 2px dashed var(--border);
+      background: rgba(248, 250, 252, 0.8);
+      padding: 2.5rem 1.25rem;
+      text-align: center;
+    }
+
+    .empty-icon {
+      width: 3rem;
+      height: 3rem;
+      margin: 0 auto 0.75rem;
+      border-radius: 1rem;
+      background: var(--sky-100);
+      color: var(--sky-600);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .empty-title {
+      margin: 0;
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1e293b;
+    }
+
+    .empty-sub {
+      margin: 0.25rem 0 0;
+      font-size: 0.875rem;
+      color: var(--text-muted);
+    }
+
+    .copy-btn {
+      margin-top: 1rem;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      padding: 0.625rem 1rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+      box-shadow: 0 1px 2px rgba(15, 23, 42, 0.04);
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .copy-btn:hover {
+      background: var(--surface-subtle);
+    }
+
+    .copy-btn:active {
+      transform: scale(0.96);
+    }
+
+    /* Add Task Section */
+    .add-header {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .add-heading {
+      margin: 0;
+      font-size: 1.125rem;
+      font-weight: 700;
+    }
+
+    .selected-preview {
+      border-radius: 0.5rem;
+      background: var(--sky-50);
+      padding: 0.35rem 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: var(--sky-700);
+    }
+
+    .period-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.5rem;
+      margin-bottom: 0.75rem;
+    }
+
+    .period-tab {
+      border: none;
+      border-radius: 0.75rem;
+      padding: 0.5rem 0.875rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      background: var(--surface-subtle);
+      color: #475569;
+      transition: background-color 0.15s, color 0.15s, transform 0.1s;
+    }
+
+    .period-tab:hover {
+      background: var(--border);
+    }
+
+    .period-tab.active {
+      background: var(--sky-600);
+      color: #ffffff;
+    }
+
+    .period-tab:active {
+      transform: scale(0.95);
+    }
+
+    .presets-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 0.5rem;
+      margin-bottom: 1rem;
+    }
+
+    @media (min-width: 640px) {
+      .presets-grid {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+      }
+    }
+
+    .preset-btn {
+      height: 3rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #334155;
+      cursor: pointer;
+      transition: all 0.15s;
+    }
+
+    .preset-btn:hover {
+      border-color: var(--sky-300);
+      background: var(--sky-50);
+    }
+
+    .preset-btn.selected {
+      border-color: var(--sky-600);
+      background: var(--sky-600);
+      color: #ffffff;
+      box-shadow: 0 1px 3px rgba(2, 132, 199, 0.25);
+    }
+
+    .preset-btn.custom-pill {
+      border-style: dashed;
+      border-color: var(--border-strong);
+      background: var(--surface);
+      color: #475569;
+    }
+
+    .preset-btn.custom-pill.selected {
+      border-style: solid;
+      border-color: var(--sky-600);
+      background: var(--sky-600);
+      color: #ffffff;
+    }
+
+    .preset-btn:active {
+      transform: scale(0.95);
+    }
+
+    .custom-time-box {
+      border-radius: 1rem;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      padding: 0.875rem;
+      margin-bottom: 1rem;
+    }
+
+    .custom-label {
+      margin: 0 0 0.5rem;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+    }
+
+    .time-controls {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .time-select {
+      height: 2.75rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      padding: 0 0.75rem;
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .ampm-group {
+      display: inline-flex;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-strong);
+      background: var(--surface);
+      padding: 0.25rem;
+    }
+
+    .ampm-btn {
+      border: none;
+      border-radius: 0.5rem;
+      padding: 0.375rem 0.75rem;
+      font-size: 0.875rem;
+      font-weight: 700;
+      background: transparent;
+      color: #475569;
+      cursor: pointer;
+      transition: background-color 0.15s, color 0.15s;
+    }
+
+    .ampm-btn.active {
+      background: var(--sky-600);
+      color: #ffffff;
+    }
+
+    .add-form {
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    @media (min-width: 640px) {
+      .add-form {
+        flex-direction: row;
+      }
+    }
+
+    .task-input {
+      flex: 1;
+      height: 3.5rem;
+      border-radius: 1rem;
+      border: 1px solid var(--border-strong);
+      background: var(--bg);
+      padding: 0 1rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      outline: none;
+      transition: border-color 0.15s, background-color 0.15s, box-shadow 0.15s;
+    }
+
+    .task-input:focus {
+      border-color: var(--sky-600);
+      background: var(--surface);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    .submit-btn {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.5rem;
+      height: 3.5rem;
+      padding: 0 1.5rem;
+      border: none;
+      border-radius: 1rem;
+      background: var(--sky-600);
+      font-size: 1rem;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+      box-shadow: 0 1px 3px rgba(2, 132, 199, 0.25);
+      transition: background-color 0.15s, transform 0.1s;
+    }
+
+    .submit-btn:hover {
+      background: var(--sky-700);
+    }
+
+    .submit-btn:active {
+      transform: scale(0.98);
+    }
+
+    .form-error {
+      margin: 0.5rem 0 0;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: var(--rose-600);
+    }
+
+    .footer {
+      margin-top: 1.5rem;
+      text-align: center;
+      font-size: 0.75rem;
+      font-weight: 500;
+      color: var(--text-soft);
+    }
+
+    /* Modal */
+    .modal-backdrop {
+      position: fixed;
+      inset: 0;
+      z-index: 50;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(15, 23, 42, 0.45);
+      padding: 1rem;
+      backdrop-filter: blur(2px);
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 28rem;
+      border-radius: 1.5rem;
+      background: var(--surface);
+      padding: 1.5rem;
+      box-shadow: 0 20px 25px -5px rgba(15, 23, 42, 0.15);
+    }
+
+    .modal-title {
+      margin: 0 0 1rem;
+      font-size: 1.125rem;
+      font-weight: 700;
+    }
+
+    .field-group {
+      margin-bottom: 1rem;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 0.375rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #334155;
+    }
+
+    .modal-input {
+      width: 100%;
+      height: 3rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border-strong);
+      padding: 0 0.875rem;
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--text);
+      outline: none;
+    }
+
+    .modal-input:focus {
+      border-color: var(--sky-600);
+      box-shadow: 0 0 0 3px rgba(2, 132, 199, 0.15);
+    }
+
+    .modal-actions {
+      display: flex;
+      justify-content: flex-end;
+      gap: 0.5rem;
+      padding-top: 0.5rem;
+    }
+
+    .btn-secondary {
+      height: 2.75rem;
+      padding: 0 1rem;
+      border-radius: 0.75rem;
+      border: 1px solid var(--border);
+      background: var(--surface);
+      font-size: 0.875rem;
+      font-weight: 600;
+      color: #334155;
+      cursor: pointer;
+    }
+
+    .btn-secondary:hover {
+      background: var(--surface-subtle);
+    }
+
+    .btn-primary {
+      height: 2.75rem;
+      padding: 0 1.25rem;
+      border-radius: 0.75rem;
+      border: none;
+      background: var(--sky-600);
+      font-size: 0.875rem;
+      font-weight: 700;
+      color: #ffffff;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      background: var(--sky-700);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    .icon-sm { width: 1rem; height: 1rem; }
+    .icon-md { width: 1.25rem; height: 1.25rem; }
+    .icon-lg { width: 1.5rem; height: 1.5rem; }
+  </style>
+</head>
+<body>
+  <div class="container">
+
+    <!-- Top Header -->
+    <header class="header">
+      <div>
+        <div class="title-row">
+          <h1 class="title">Carter's Routine</h1>
+          <span id="todayBadge" class="today-badge">Today</span>
+        </div>
+        <p id="dateSubtitle" class="date-subtitle"></p>
+      </div>
+
+      <div class="header-actions">
+        <div class="day-nav">
+          <button id="prevDayBtn" type="button" aria-label="Previous day" class="icon-btn">
+            <svg class="icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7" />
+            </svg>
+          </button>
+          <button id="goTodayBtn" type="button" class="today-btn">Today</button>
+          <button id="nextDayBtn" type="button" aria-label="Next day" class="icon-btn">
+            <svg class="icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7" />
+            </svg>
+          </button>
+        </div>
+
+        <button id="soundToggleBtn" type="button" aria-label="Toggle completion sound" class="sound-btn">
+          <span id="soundIconWrap"></span>
+          <span id="soundLabel" class="sound-label">Sound On</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Prominent Today's Schedule Card -->
+    <main class="card">
+      <div class="schedule-top">
+        <div>
+          <h2 id="scheduleHeading" class="schedule-heading">Today's Schedule</h2>
+          <p id="progressText" class="progress-text">0 of 0 tasks done</p>
+        </div>
+        <div id="allDonePill" class="all-done-pill hidden">
+          <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />
+          </svg>
+          All done!
+        </div>
+      </div>
+
+      <div class="progress-track">
+        <div id="progressBar" class="progress-fill"></div>
+      </div>
+
+      <ul id="scheduleList" class="schedule-list" aria-live="polite"></ul>
+
+      <div id="emptyState" class="empty-state hidden">
+        <div class="empty-icon">
+          <svg class="icon-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6l4 2m6-2a10 10 0 11-20 0 10 10 0 0120 0z" />
+          </svg>
+        </div>
+        <p class="empty-title">No tasks planned yet for this day</p>
+        <p class="empty-sub">Pick a time below and type a task to build your schedule.</p>
+        <button id="copyYesterdayBtn" type="button" class="copy-btn hidden">
+          <svg class="icon-sm" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+          </svg>
+          Copy yesterday's tasks
+        </button>
+      </div>
+    </main>
+
+    <!-- Add Task Panel -->
+    <section class="card" aria-label="Add a task">
+      <div class="add-header">
+        <h3 class="add-heading">Add a Task</h3>
+        <span id="selectedTimePreview" class="selected-preview">Selected: 3:30 PM</span>
+      </div>
+
+      <div class="period-tabs" role="tablist" aria-label="Time of day">
+        <button type="button" data-period="all" class="period-tab">All</button>
+        <button type="button" data-period="morning" class="period-tab">Morning</button>
+        <button type="button" data-period="afternoon" class="period-tab">Afternoon</button>
+        <button type="button" data-period="evening" class="period-tab">Evening</button>
+      </div>
+
+      <div id="timePresetsGrid" class="presets-grid"></div>
+
+      <div id="customTimeBox" class="custom-time-box hidden">
+        <p class="custom-label">Custom Time (12-Hour)</p>
+        <div class="time-controls">
+          <select id="customHour" aria-label="Hour" class="time-select">
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3" selected>3</option>
+            <option value="4">4</option>
+            <option value="5">5</option>
+            <option value="6">6</option>
+            <option value="7">7</option>
+            <option value="8">8</option>
+            <option value="9">9</option>
+            <option value="10">10</option>
+            <option value="11">11</option>
+            <option value="12">12</option>
+          </select>
+          <span style="font-weight:700;color:#94a3b8;">:</span>
+          <select id="customMinute" aria-label="Minute" class="time-select">
+            <option value="00">00</option>
+            <option value="05">05</option>
+            <option value="10">10</option>
+            <option value="15">15</option>
+            <option value="20">20</option>
+            <option value="25">25</option>
+            <option value="30" selected>30</option>
+            <option value="35">35</option>
+            <option value="40">40</option>
+            <option value="45">45</option>
+            <option value="50">50</option>
+            <option value="55">55</option>
+          </select>
+          <div class="ampm-group">
+            <button type="button" id="customAmBtn" class="ampm-btn">AM</button>
+            <button type="button" id="customPmBtn" class="ampm-btn">PM</button>
+          </div>
+        </div>
+      </div>
+
+      <form id="addTaskForm" class="add-form">
+        <input
+          id="taskInput"
+          type="text"
+          maxlength="120"
+          autocomplete="off"
+          placeholder="Type a task (e.g., Homework, Reading, Taekwondo)..."
+          class="task-input"
+        />
+        <button type="submit" class="submit-btn">
+          <svg class="icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 4v16m8-8H4" />
+          </svg>
+          Add to Schedule
+        </button>
+      </form>
+      <p id="formError" class="form-error hidden">Please type a task before adding it.</p>
+    </section>
+
+    <footer class="footer">
+      Saved automatically on this device &bull; A fresh schedule starts every day
+    </footer>
+  </div>
+
+  <!-- Edit Task Modal -->
+  <div id="editModal" class="modal-backdrop hidden">
+    <div class="modal-card">
+      <h3 class="modal-title">Edit Task</h3>
+      <form id="editTaskForm">
+        <div class="field-group">
+          <label for="editTaskText" class="field-label">Task</label>
+          <input id="editTaskText" type="text" maxlength="120" class="modal-input" />
+        </div>
+        <div class="field-group">
+          <span class="field-label">Time (12-Hour)</span>
+          <div class="time-controls">
+            <select id="editHour" aria-label="Edit hour" class="time-select">
+              <option value="1">1</option>
+              <option value="2">2</option>
+              <option value="3">3</option>
+              <option value="4">4</option>
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10">10</option>
+              <option value="11">11</option>
+              <option value="12">12</option>
+            </select>
+            <span style="font-weight:700;color:#94a3b8;">:</span>
+            <select id="editMinute" aria-label="Edit minute" class="time-select">
+              <option value="00">00</option>
+              <option value="05">05</option>
+              <option value="10">10</option>
+              <option value="15">15</option>
+              <option value="20">20</option>
+              <option value="25">25</option>
+              <option value="30">30</option>
+              <option value="35">35</option>
+              <option value="40">40</option>
+              <option value="45">45</option>
+              <option value="50">50</option>
+              <option value="55">55</option>
+            </select>
+            <div class="ampm-group">
+              <button type="button" id="editAmBtn" class="ampm-btn">AM</button>
+              <button type="button" id="editPmBtn" class="ampm-btn">PM</button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="cancelEditBtn" class="btn-secondary">Cancel</button>
+          <button type="submit" class="btn-primary">Save Changes</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <script>
+    (function () {
+      const STORAGE_PREFIX = 'carter_routine_v1_';
+      const SOUND_KEY = 'carter_routine_sound_v1';
+
+      const TIME_PRESETS = [
+        { minutes: 7 * 60, label: '7:00 AM', period: 'morning' },
+        { minutes: 7 * 60 + 30, label: '7:30 AM', period: 'morning' },
+        { minutes: 8 * 60, label: '8:00 AM', period: 'morning' },
+        { minutes: 9 * 60, label: '9:00 AM', period: 'morning' },
+        { minutes: 10 * 60, label: '10:00 AM', period: 'morning' },
+        { minutes: 11 * 60, label: '11:00 AM', period: 'morning' },
+        { minutes: 12 * 60, label: '12:00 PM', period: 'afternoon' },
+        { minutes: 13 * 60, label: '1:00 PM', period: 'afternoon' },
+        { minutes: 14 * 60, label: '2:00 PM', period: 'afternoon' },
+        { minutes: 15 * 60, label: '3:00 PM', period: 'afternoon' },
+        { minutes: 15 * 60 + 30, label: '3:30 PM', period: 'afternoon' },
+        { minutes: 16 * 60, label: '4:00 PM', period: 'afternoon' },
+        { minutes: 16 * 60 + 30, label: '4:30 PM', period: 'afternoon' },
+        { minutes: 17 * 60, label: '5:00 PM', period: 'afternoon' },
+        { minutes: 17 * 60 + 30, label: '5:30 PM', period: 'afternoon' },
+        { minutes: 18 * 60, label: '6:00 PM', period: 'evening' },
+        { minutes: 18 * 60 + 30, label: '6:30 PM', period: 'evening' },
+        { minutes: 19 * 60, label: '7:00 PM', period: 'evening' },
+        { minutes: 19 * 60 + 30, label: '7:30 PM', period: 'evening' },
+        { minutes: 20 * 60, label: '8:00 PM', period: 'evening' },
+        { minutes: 20 * 60 + 30, label: '8:30 PM', period: 'evening' },
+        { minutes: 21 * 60, label: '9:00 PM', period: 'evening' }
+      ];
+
+      let currentDateStr = getTodayDateStr();
+      let activePeriod = 'all';
+      let selectedMinutes = 15 * 60 + 30;
+      let isCustomMode = false;
+      let customAmPm = 'PM';
+      let soundEnabled = loadSoundPreference();
+      let audioCtx = null;
+
+      let editingTaskId = null;
+      let editAmPm = 'PM';
+
+      const dateSubtitleEl = document.getElementById('dateSubtitle');
+      const todayBadgeEl = document.getElementById('todayBadge');
+      const scheduleHeadingEl = document.getElementById('scheduleHeading');
+      const progressTextEl = document.getElementById('progressText');
+      const progressBarEl = document.getElementById('progressBar');
+      const allDonePillEl = document.getElementById('allDonePill');
+      const scheduleListEl = document.getElementById('scheduleList');
+      const emptyStateEl = document.getElementById('emptyState');
+      const copyYesterdayBtn = document.getElementById('copyYesterdayBtn');
+
+      const prevDayBtn = document.getElementById('prevDayBtn');
+      const goTodayBtn = document.getElementById('goTodayBtn');
+      const nextDayBtn = document.getElementById('nextDayBtn');
+      const soundToggleBtn = document.getElementById('soundToggleBtn');
+      const soundIconWrap = document.getElementById('soundIconWrap');
+      const soundLabel = document.getElementById('soundLabel');
+
+      const selectedTimePreview = document.getElementById('selectedTimePreview');
+      const timePresetsGrid = document.getElementById('timePresetsGrid');
+      const customTimeBox = document.getElementById('customTimeBox');
+      const customHourEl = document.getElementById('customHour');
+      const customMinuteEl = document.getElementById('customMinute');
+      const customAmBtn = document.getElementById('customAmBtn');
+      const customPmBtn = document.getElementById('customPmBtn');
+
+      const addTaskForm = document.getElementById('addTaskForm');
+      const taskInputEl = document.getElementById('taskInput');
+      const formErrorEl = document.getElementById('formError');
+
+      const editModal = document.getElementById('editModal');
+      const editTaskForm = document.getElementById('editTaskForm');
+      const editTaskTextEl = document.getElementById('editTaskText');
+      const editHourEl = document.getElementById('editHour');
+      const editMinuteEl = document.getElementById('editMinute');
+      const editAmBtn = document.getElementById('editAmBtn');
+      const editPmBtn = document.getElementById('editPmBtn');
+      const cancelEditBtn = document.getElementById('cancelEditBtn');
+
+      function getTodayDateStr() {
+        return formatDateStr(new Date());
+      }
+
+      function formatDateStr(d) {
+        const y = d.getFullYear();
+        const m = String(d.getMonth() + 1).padStart(2, '0');
+        const day = String(d.getDate()).padStart(2, '0');
+        return `${y}-${m}-${day}`;
+      }
+
+      function shiftDateStr(dateStr, deltaDays) {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const dt = new Date(y, m - 1, d);
+        dt.setDate(dt.getDate() + deltaDays);
+        return formatDateStr(dt);
+      }
+
+      function formatFriendlyDate(dateStr) {
+        const [y, m, d] = dateStr.split('-').map(Number);
+        const dt = new Date(y, m - 1, d);
+        return dt.toLocaleDateString('en-US', {
+          weekday: 'long',
+          month: 'long',
+          day: 'numeric',
+          year: 'numeric'
+        });
+      }
+
+      function formatMinutes12h(totalMins) {
+        const normalized = ((totalMins % 1440) + 1440) % 1440;
+        const h24 = Math.floor(normalized / 60);
+        const m = normalized % 60;
+        const ampm = h24 >= 12 ? 'PM' : 'AM';
+        const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+        return `${h12}:${String(m).padStart(2, '0')} ${ampm}`;
+      }
+
+      function toMinutes24h(hour12, minute, ampm) {
+        let h = parseInt(hour12, 10);
+        const m = parseInt(minute, 10);
+        if (ampm === 'AM') {
+          if (h === 12) h = 0;
+        } else {
+          if (h !== 12) h += 12;
+        }
+        return h * 60 + m;
+      }
+
+      function fromMinutes24h(totalMins) {
+        const h24 = Math.floor(totalMins / 60);
+        const m = totalMins % 60;
+        const ampm = h24 >= 12 ? 'PM' : 'AM';
+        const h12 = h24 % 12 === 0 ? 12 : h24 % 12;
+        return {
+          hour: String(h12),
+          minute: String(m).padStart(2, '0'),
+          ampm
+        };
+      }
+
+      function loadTasks(dateStr) {
+        try {
+          const raw = localStorage.getItem(STORAGE_PREFIX + dateStr);
+          if (!raw) return [];
+          const parsed = JSON.parse(raw);
+          return Array.isArray(parsed) ? parsed : [];
+        } catch (err) {
+          return [];
+        }
+      }
+
+      function saveTasks(dateStr, tasks) {
+        try {
+          localStorage.setItem(STORAGE_PREFIX + dateStr, JSON.stringify(tasks));
+        } catch (err) {
+          // Ignore storage restrictions
+        }
+      }
+
+      function loadSoundPreference() {
+        try {
+          const raw = localStorage.getItem(SOUND_KEY);
+          return raw === null ? true : raw === 'true';
+        } catch (err) {
+          return true;
+        }
+      }
+
+      function saveSoundPreference(val) {
+        try {
+          localStorage.setItem(SOUND_KEY, String(val));
+        } catch (err) {
+          // Ignore
+        }
+      }
+
+      function ensureAudioContext() {
+        if (!audioCtx) {
+          const Ctx = window.AudioContext || window.webkitAudioContext;
+          if (Ctx) {
+            audioCtx = new Ctx();
+          }
+        }
+        if (audioCtx && audioCtx.state === 'suspended') {
+          audioCtx.resume().catch(function () {});
+        }
+        return audioCtx;
+      }
+
+      function playTone(freq, startOffset, duration, gainPeak, type) {
+        const ctx = ensureAudioContext();
+        if (!ctx) return;
+        const now = ctx.currentTime + startOffset;
+        const osc = ctx.createOscillator();
+        const gain = ctx.createGain();
+        osc.type = type || 'triangle';
+        osc.frequency.setValueAtTime(freq, now);
+
+        gain.gain.setValueAtTime(0.0001, now);
+        gain.gain.exponentialRampToValueAtTime(gainPeak, now + 0.015);
+        gain.gain.exponentialRampToValueAtTime(0.0001, now + duration);
+
+        osc.connect(gain);
+        gain.connect(ctx.destination);
+        osc.start(now);
+        osc.stop(now + duration + 0.02);
+      }
+
+      function playCompleteSound(allDone) {
+        if (!soundEnabled) return;
+        if (allDone) {
+          playTone(523.25, 0, 0.16, 0.2, 'triangle');
+          playTone(659.25, 0.09, 0.18, 0.2, 'triangle');
+          playTone(783.99, 0.18, 0.22, 0.22, 'triangle');
+          playTone(1046.5, 0.28, 0.36, 0.25, 'sine');
+        } else {
+          playTone(783.99, 0, 0.14, 0.2, 'triangle');
+          playTone(1046.5, 0.08, 0.28, 0.24, 'sine');
+        }
+      }
+
+      function renderSoundButton() {
+        if (soundEnabled) {
+          soundLabel.textContent = 'Sound On';
+          soundIconWrap.style.color = '#0284c7';
+          soundIconWrap.innerHTML =
+            '<svg class="icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z" />' +
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M15.54 8.46a5 5 0 010 7.07M19.07 4.93a10 10 0 010 14.14" />' +
+            '</svg>';
+        } else {
+          soundLabel.textContent = 'Muted';
+          soundIconWrap.style.color = '#94a3b8';
+          soundIconWrap.innerHTML =
+            '<svg class="icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.2">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M11 5L6 9H2v6h4l5 4V5z" />' +
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M23 9l-6 6M17 9l6 6" />' +
+            '</svg>';
+        }
+      }
+
+      function renderPeriodTabs() {
+        document.querySelectorAll('.period-tab').forEach(function (btn) {
+          btn.classList.toggle('active', btn.dataset.period === activePeriod);
+        });
+      }
+
+      function updateCustomAmPmUI() {
+        customAmBtn.classList.toggle('active', customAmPm === 'AM');
+        customPmBtn.classList.toggle('active', customAmPm === 'PM');
+      }
+
+      function renderTimePresets() {
+        const filtered = TIME_PRESETS.filter(function (p) {
+          return activePeriod === 'all' || p.period === activePeriod;
+        });
+
+        timePresetsGrid.innerHTML = '';
+        filtered.forEach(function (preset) {
+          const btn = document.createElement('button');
+          btn.type = 'button';
+          const isSelected = !isCustomMode && selectedMinutes === preset.minutes;
+          btn.className = 'preset-btn' + (isSelected ? ' selected' : '');
+          btn.textContent = preset.label;
+          btn.addEventListener('click', function () {
+            isCustomMode = false;
+            selectedMinutes = preset.minutes;
+            customTimeBox.classList.add('hidden');
+            updateSelectedTimePreview();
+            renderTimePresets();
+          });
+          timePresetsGrid.appendChild(btn);
+        });
+
+        const customBtn = document.createElement('button');
+        customBtn.type = 'button';
+        customBtn.className = 'preset-btn custom-pill' + (isCustomMode ? ' selected' : '');
+        customBtn.textContent = 'Custom...';
+        customBtn.addEventListener('click', function () {
+          isCustomMode = true;
+          const parts = fromMinutes24h(selectedMinutes);
+          customHourEl.value = parts.hour;
+          const mNum = Math.round(parseInt(parts.minute, 10) / 5) * 5;
+          customMinuteEl.value = String(mNum === 60 ? 55 : mNum).padStart(2, '0');
+          customAmPm = parts.ampm;
+          updateCustomAmPmUI();
+          customTimeBox.classList.remove('hidden');
+          updateSelectedTimePreview();
+          renderTimePresets();
+        });
+        timePresetsGrid.appendChild(customBtn);
+      }
+
+      function updateSelectedTimePreview() {
+        if (isCustomMode) {
+          selectedMinutes = toMinutes24h(customHourEl.value, customMinuteEl.value, customAmPm);
+        }
+        selectedTimePreview.textContent = 'Selected: ' + formatMinutes12h(selectedMinutes);
+      }
+
+      function renderHeader() {
+        const todayStr = getTodayDateStr();
+        const isToday = currentDateStr === todayStr;
+        dateSubtitleEl.textContent = formatFriendlyDate(currentDateStr);
+        todayBadgeEl.classList.toggle('hidden', !isToday);
+
+        if (isToday) {
+          scheduleHeadingEl.textContent = "Today's Schedule";
+        } else if (currentDateStr === shiftDateStr(todayStr, -1)) {
+          scheduleHeadingEl.textContent = "Yesterday's Schedule";
+        } else if (currentDateStr === shiftDateStr(todayStr, 1)) {
+          scheduleHeadingEl.textContent = "Tomorrow's Schedule";
+        } else {
+          scheduleHeadingEl.textContent = 'Schedule';
+        }
+      }
+
+      function renderSchedule() {
+        const tasks = loadTasks(currentDateStr).slice().sort(function (a, b) {
+          return a.minutes - b.minutes || a.createdAt - b.createdAt;
+        });
+
+        const total = tasks.length;
+        const doneCount = tasks.filter(function (t) { return t.completed; }).length;
+        const pct = total === 0 ? 0 : Math.round((doneCount / total) * 100);
+
+        progressTextEl.textContent = `${doneCount} of ${total} ${total === 1 ? 'task' : 'tasks'} done`;
+        progressBarEl.style.width = pct + '%';
+
+        const allDone = total > 0 && doneCount === total;
+        allDonePillEl.classList.toggle('hidden', !allDone);
+
+        scheduleListEl.innerHTML = '';
+
+        if (total === 0) {
+          emptyStateEl.classList.remove('hidden');
+          const prevStr = shiftDateStr(currentDateStr, -1);
+          const prevTasks = loadTasks(prevStr);
+          copyYesterdayBtn.classList.toggle('hidden', prevTasks.length === 0);
+          return;
+        }
+
+        emptyStateEl.classList.add('hidden');
+
+        tasks.forEach(function (task) {
+          const li = document.createElement('li');
+          li.className = 'task-item' + (task.completed ? ' completed' : '');
+
+          const checkBtn = document.createElement('button');
+          checkBtn.type = 'button';
+          checkBtn.setAttribute('aria-label', task.completed ? 'Mark task not done' : 'Mark task done');
+          checkBtn.className = 'check-btn' + (task.completed ? ' completed' : '');
+          checkBtn.innerHTML =
+            '<svg class="icon-lg" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="3">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M5 13l4 4L19 7" />' +
+            '</svg>';
+          checkBtn.addEventListener('click', function () {
+            toggleTask(task.id);
+          });
+
+          const contentBtn = document.createElement('button');
+          contentBtn.type = 'button';
+          contentBtn.className = 'task-content-btn';
+          contentBtn.addEventListener('click', function () {
+            toggleTask(task.id);
+          });
+
+          const timeBadge = document.createElement('span');
+          timeBadge.className = 'time-badge';
+          timeBadge.textContent = formatMinutes12h(task.minutes);
+
+          const titleSpan = document.createElement('span');
+          titleSpan.className = 'task-title';
+          titleSpan.textContent = task.text;
+
+          contentBtn.appendChild(timeBadge);
+          contentBtn.appendChild(titleSpan);
+
+          const actionsWrap = document.createElement('div');
+          actionsWrap.className = 'task-actions';
+
+          const editBtn = document.createElement('button');
+          editBtn.type = 'button';
+          editBtn.setAttribute('aria-label', 'Edit task');
+          editBtn.className = 'action-btn';
+          editBtn.innerHTML =
+            '<svg class="icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />' +
+            '</svg>';
+          editBtn.addEventListener('click', function () {
+            openEditModal(task);
+          });
+
+          const deleteBtn = document.createElement('button');
+          deleteBtn.type = 'button';
+          deleteBtn.setAttribute('aria-label', 'Delete task');
+          deleteBtn.className = 'action-btn delete';
+          deleteBtn.innerHTML =
+            '<svg class="icon-md" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">' +
+            '<path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />' +
+            '</svg>';
+          deleteBtn.addEventListener('click', function () {
+            deleteTask(task.id);
+          });
+
+          actionsWrap.appendChild(editBtn);
+          actionsWrap.appendChild(deleteBtn);
+
+          li.appendChild(checkBtn);
+          li.appendChild(contentBtn);
+          li.appendChild(actionsWrap);
+          scheduleListEl.appendChild(li);
+        });
+      }
+
+      function addTask(text, minutes) {
+        const tasks = loadTasks(currentDateStr);
+        tasks.push({
+          id: 't_' + Date.now() + '_' + Math.random().toString(36).slice(2, 7),
+          text: text,
+          minutes: minutes,
+          completed: false,
+          createdAt: Date.now()
+        });
+        saveTasks(currentDateStr, tasks);
+        renderSchedule();
+      }
+
+      function toggleTask(taskId) {
+        const tasks = loadTasks(currentDateStr);
+        let becameCompleted = false;
+        const updated = tasks.map(function (t) {
+          if (t.id === taskId) {
+            becameCompleted = !t.completed;
+            return Object.assign({}, t, { completed: !t.completed });
+          }
+          return t;
+        });
+        saveTasks(currentDateStr, updated);
+
+        if (becameCompleted) {
+          const allDone = updated.length > 0 && updated.every(function (t) { return t.completed; });
+          playCompleteSound(allDone);
+        }
+        renderSchedule();
+      }
+
+      function deleteTask(taskId) {
+        const tasks = loadTasks(currentDateStr).filter(function (t) {
+          return t.id !== taskId;
+        });
+        saveTasks(currentDateStr, tasks);
+        renderSchedule();
+      }
+
+      function updateEditAmPmUI() {
+        editAmBtn.classList.toggle('active', editAmPm === 'AM');
+        editPmBtn.classList.toggle('active', editAmPm === 'PM');
+      }
+
+      function openEditModal(task) {
+        editingTaskId = task.id;
+        editTaskTextEl.value = task.text;
+        const parts = fromMinutes24h(task.minutes);
+        editHourEl.value = parts.hour;
+        const mNum = Math.round(parseInt(parts.minute, 10) / 5) * 5;
+        editMinuteEl.value = String(mNum === 60 ? 55 : mNum).padStart(2, '0');
+        editAmPm = parts.ampm;
+        updateEditAmPmUI();
+        editModal.classList.remove('hidden');
+        editTaskTextEl.focus();
+      }
+
+      function closeEditModal() {
+        editingTaskId = null;
+        editModal.classList.add('hidden');
+      }
+
+      document.querySelectorAll('.period-tab').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          activePeriod = btn.dataset.period;
+          renderPeriodTabs();
+          renderTimePresets();
+        });
+      });
+
+      customHourEl.addEventListener('change', updateSelectedTimePreview);
+      customMinuteEl.addEventListener('change', updateSelectedTimePreview);
+      customAmBtn.addEventListener('click', function () {
+        customAmPm = 'AM';
+        updateCustomAmPmUI();
+        updateSelectedTimePreview();
+      });
+      customPmBtn.addEventListener('click', function () {
+        customAmPm = 'PM';
+        updateCustomAmPmUI();
+        updateSelectedTimePreview();
+      });
+
+      addTaskForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        ensureAudioContext();
+        const text = taskInputEl.value.trim();
+        if (!text) {
+          formErrorEl.classList.remove('hidden');
+          taskInputEl.focus();
+          return;
+        }
+        formErrorEl.classList.add('hidden');
+        updateSelectedTimePreview();
+        addTask(text, selectedMinutes);
+        taskInputEl.value = '';
+        taskInputEl.focus();
+      });
+
+      taskInputEl.addEventListener('input', function () {
+        if (taskInputEl.value.trim()) {
+          formErrorEl.classList.add('hidden');
+        }
+      });
+
+      prevDayBtn.addEventListener('click', function () {
+        currentDateStr = shiftDateStr(currentDateStr, -1);
+        renderHeader();
+        renderSchedule();
+      });
+
+      nextDayBtn.addEventListener('click', function () {
+        currentDateStr = shiftDateStr(currentDateStr, 1);
+        renderHeader();
+        renderSchedule();
+      });
+
+      goTodayBtn.addEventListener('click', function () {
+        currentDateStr = getTodayDateStr();
+        renderHeader();
+        renderSchedule();
+      });
+
+      soundToggleBtn.addEventListener('click', function () {
+        soundEnabled = !soundEnabled;
+        saveSoundPreference(soundEnabled);
+        renderSoundButton();
+        if (soundEnabled) {
+          playCompleteSound(false);
+        }
+      });
+
+      copyYesterdayBtn.addEventListener('click', function () {
+        const prevStr = shiftDateStr(currentDateStr, -1);
+        const prevTasks = loadTasks(prevStr);
+        if (prevTasks.length === 0) return;
+        const copied = prevTasks.map(function (t, idx) {
+          return {
+            id: 't_' + Date.now() + '_' + idx,
+            text: t.text,
+            minutes: t.minutes,
+            completed: false,
+            createdAt: Date.now() + idx
+          };
+        });
+        saveTasks(currentDateStr, copied);
+        renderSchedule();
+      });
+
+      editAmBtn.addEventListener('click', function () {
+        editAmPm = 'AM';
+        updateEditAmPmUI();
+      });
+      editPmBtn.addEventListener('click', function () {
+        editAmPm = 'PM';
+        updateEditAmPmUI();
+      });
+      cancelEditBtn.addEventListener('click', closeEditModal);
+      editModal.addEventListener('click', function (e) {
+        if (e.target === editModal) closeEditModal();
+      });
+
+      editTaskForm.addEventListener('submit', function (e) {
+        e.preventDefault();
+        if (!editingTaskId) return;
+        const newText = editTaskTextEl.value.trim();
+        if (!newText) return;
+        const newMins = toMinutes24h(editHourEl.value, editMinuteEl.value, editAmPm);
+        const tasks = loadTasks(currentDateStr).map(function (t) {
+          if (t.id === editingTaskId) {
+            return Object.assign({}, t, { text: newText, minutes: newMins });
+          }
+          return t;
+        });
+        saveTasks(currentDateStr, tasks);
+        closeEditModal();
+        renderSchedule();
+      });
+
+      setInterval(function () {
+        const latestToday = getTodayDateStr();
+        if (latestToday !== currentDateStr && scheduleHeadingEl.textContent === "Today's Schedule") {
+          currentDateStr = latestToday;
+          renderHeader();
+          renderSchedule();
+        }
+      }, 60000);
+
+      renderSoundButton();
+      renderPeriodTabs();
+      renderTimePresets();
+      updateSelectedTimePreview();
+      renderHeader();
+      renderSchedule();
+    })();
+  </script>
+</body>
+</html>
